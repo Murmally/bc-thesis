@@ -7,6 +7,13 @@
 #include "tiny_aes.h"
 #include "rosetta_des.h"
 #include "programmingalgorithms_des.h"
+#include "main.h"
+
+// #define KEY_LENGTH 128
+#define KEY_LENGTH 16
+// #define MESSAGE_LENGTH 512
+#define MESSAGE_LENGTH 64
+
 
 int pkcs7_padding_pad_buffer(uint8_t* buffer, size_t data_length, size_t buffer_size, uint8_t modulus) {
     uint8_t pad_byte = modulus - (data_length % modulus);
@@ -43,8 +50,8 @@ void tiny_aes(char* report, char* key, uint8_t* iv) {
     // uint8_t hexarray[dlenu];
     // uint8_t kexarray[klenu];
 
-    uint8_t hexarray[64];
-    uint8_t kexarray[64];
+    uint8_t hexarray[MESSAGE_LENGTH];
+    uint8_t kexarray[KEY_LENGTH];
 
     // Initialize them with zeros
     memset(hexarray, 0, dlenu);
@@ -76,9 +83,10 @@ void tiny_aes(char* report, char* key, uint8_t* iv) {
 }
 
 void print_output(char* description, int runs, clock_t start, clock_t end) {
-    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
-    printf("~~~~~ %s ~~~~~\nTime elapsed: %f\nAverage time per run: %f\n\n",
-        description, time_spent, time_spent / runs);
+    double time_spent = ((double)end - (double)start) / CLOCKS_PER_SEC;
+    double bitrate = MESSAGE_LENGTH * (runs / time_spent);
+    printf("~~~~~ %s ~~~~~\nTime elapsed: %f\nAverage time per run: %f\nBitrate: %.01lf b/s  =>  %.0lf B/s  =>  %.0lf kB/s\n\n",
+        description, time_spent, time_spent / runs, bitrate, bitrate / 8, (bitrate / 8) / 100);
 }
 
 void measure_tiny_aes(int runs, char* message, char* key, uint8_t iv[]) {
@@ -92,12 +100,23 @@ void measure_tiny_aes(int runs, char* message, char* key, uint8_t iv[]) {
 }
 
 void measure_openssl_aes(int runs, char* message, char* key) {
+    clock_t openssl_aes_start = clock();
+    for (int i = 0; i < runs; i++) {
+        openssl_main(message, key, MESSAGE_LENGTH, KEY_LENGTH);
+    }
+
+    clock_t openssl_aes_end = clock();
+    print_output("OpenSSL", runs, openssl_aes_start, openssl_aes_end);
+}
+
+void Xmeasure_openssl_aes(int runs, char* message, char* key) {
 
 }
 
 void measure_aes(int runs, char* message, char* key, uint8_t iv[]) {
     printf("========== AES ==========\n");
-    measure_tiny_aes(runs, message, key, iv); // TODOx - zmenit implementaci pro ruzne velikosti klice
+    measure_openssl_aes(runs, message, key);
+    measure_tiny_aes(runs, message, key, iv);
 }
 
 void measure_rosetta_des(int runs, char* key) {
@@ -119,7 +138,6 @@ void measure_programmingalgorithms_des(int runs) {
     print_output("programmingalgorithms DES", runs, start, end);
 }
 
-// TODOx
 void measure_des(int runs, char* message, char* key, uint8_t iv[]) {
     printf("========== DES ==========\n");
     measure_rosetta_des(runs, key);
@@ -127,12 +145,12 @@ void measure_des(int runs, char* message, char* key, uint8_t iv[]) {
 }
 
 int main() {
-    // both message and key are 64 characters long
-    // TODOx - prepsat delku klice na 128 znaku
-    // TODOx - prepsat delku zpravy na alespon trojnasobek delky klice
+    // length = 64 chars => 512 bits
     char* message = "This source was brought to you by Raid: Shadow Legends+Ninechars";
-    char* key = "This key was brought to you by NordVPN.Keep your privacy online.";
-    int encryption_runs = 1000;
+    // length = 16 chars => 128 bits
+    char* key = "This key was bro";
+
+    int encryption_runs = 5000;
 
     uint8_t iv[] = { 0x75, 0x52, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x67, 0x21, 0x21 };
 
