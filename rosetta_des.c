@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define KEY_LEN 8
+#define KEY_LEN 16
 typedef ubyte key_t[KEY_LEN];
 
 const static ubyte PC1[] = {
@@ -482,7 +482,7 @@ void driver(const key_t key, const ubyte* message, int len) {
     }*/
 }
 
-int rosetta_main(char* message) {
+int rosetta_main(char* message, char* key, int msgLen, int keyLen)  {
     //    const key_t keys[] = {
     //            {0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1},
     //    };
@@ -497,14 +497,13 @@ int rosetta_main(char* message) {
         ubyte rosetta_message[64];
         */
 
-    key_t rosetta_key = { 0x01,0x23,0x45,0x67,0x89,0xAB,0xCD,0xEF };
-    int len = 8;
-    ubyte rosetta_message[8];
-    for (int i = 0; i < len; i++) {
+    key_t rosetta_key = { 0x01,0x23,0x45,0x67,0x89,0xAB,0xCD,0xEF,0x01,0x23,0x45,0x67,0x89,0xAB,0xCD,0xEF };
+    
+    ubyte rosetta_message[64];
+    for (int i = 0; i < msgLen; i++) {
         rosetta_message[i] = (ubyte)message[i];
     }
 
-    driver(rosetta_key, rosetta_message, len);
-
+    driver(rosetta_key, rosetta_message, msgLen);
     return 0;
 }

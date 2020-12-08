@@ -109,29 +109,25 @@ void measure_openssl_aes(int runs, char* message, char* key) {
     print_output("OpenSSL", runs, openssl_aes_start, openssl_aes_end);
 }
 
-void Xmeasure_openssl_aes(int runs, char* message, char* key) {
-
-}
-
 void measure_aes(int runs, char* message, char* key, uint8_t iv[]) {
     printf("========== AES ==========\n");
     measure_openssl_aes(runs, message, key);
     measure_tiny_aes(runs, message, key, iv);
 }
 
-void measure_rosetta_des(int runs, char* key) {
+void measure_rosetta_des(int runs, char* message, char* key) {
     clock_t start = clock();
     for (int i = 0; i < runs; i++) {
-        rosetta_main(key);
+        rosetta_main(message, key, MESSAGE_LENGTH, KEY_LENGTH);
     }
     clock_t end = clock();
     print_output("rosetta DES", runs, start, end);
 }
 
-void measure_programmingalgorithms_des(int runs) {
+void measure_programmingalgorithms_des(int runs, char* message, char* key) {
     clock_t start = clock();
     for (int i = 0; i < runs; i++) {
-        programmingalrorithms_des();
+        programmingalrorithms_des(message, key, MESSAGE_LENGTH, KEY_LENGTH);
     }
 
     clock_t end = clock();
@@ -140,8 +136,8 @@ void measure_programmingalgorithms_des(int runs) {
 
 void measure_des(int runs, char* message, char* key, uint8_t iv[]) {
     printf("========== DES ==========\n");
-    measure_rosetta_des(runs, key);
-    measure_programmingalgorithms_des(runs);
+    measure_rosetta_des(runs, message, key);
+    measure_programmingalgorithms_des(runs, message, key);
 }
 
 int main() {
@@ -150,7 +146,7 @@ int main() {
     // length = 16 chars => 128 bits
     char* key = "This key was bro";
 
-    int encryption_runs = 5000;
+    int encryption_runs = 100000;
 
     uint8_t iv[] = { 0x75, 0x52, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x67, 0x21, 0x21 };
 
