@@ -147,8 +147,8 @@ void measure_aes(int runs, char* message, char* key, uint8_t iv[]) {
 void measure_des(int runs, char* message, char* key, uint8_t iv[]) {
     printf("========== DES ==========\n");
     measure_openssl_des(runs, message, key);
-    measure_rosetta_des(runs, message, key);
     measure_programmingalgorithms_des(runs, message, key);
+    measure_rosetta_des(runs, message, key);
 }
 
 int main() {
