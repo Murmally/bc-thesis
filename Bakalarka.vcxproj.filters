@@ -33,6 +33,12 @@
     <ClCompile Include="tiny_aes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="openssl_des.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gnutls_aes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="codingalpha_des.h">
@@ -48,6 +54,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tiny_aes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="openssl_des.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gnutls_aes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

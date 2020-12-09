@@ -10,7 +10,7 @@
 /* Print Encrypted and Decrypted data packets */
 void print_data(const char* tittle, const void* data, int len);
 
-void openssl_main(char* message, char* key, int msgLen, int keyLen)
+void openssl_aes_main(char* message, char* key, int msgLen, int keyLen)
 {
 	/* Input data to encrypt */
 	unsigned char aes_key[] = { 0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xAA,0xBB,0xCC,0xDD,0xEE,0xFF };

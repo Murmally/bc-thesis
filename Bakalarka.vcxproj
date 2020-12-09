@@ -139,16 +139,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gnutls_aes.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="codingalpha_des.c" />
     <ClCompile Include="openssl_aes.c" />
+    <ClCompile Include="openssl_des.c" />
     <ClCompile Include="programmingalgorithms_des.c" />
     <ClCompile Include="rosetta_des.c" />
     <ClCompile Include="tiny_aes.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="codingalpha_des.h" />
+    <ClInclude Include="gnutls_aes.h" />
     <ClInclude Include="openssl_aes.h" />
+    <ClInclude Include="openssl_des.h" />
     <ClInclude Include="programmingalgorithms_des.h" />
     <ClInclude Include="rosetta_des.h" />
     <ClInclude Include="tiny_aes.h" />

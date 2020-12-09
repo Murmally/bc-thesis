@@ -4,10 +4,10 @@
 #include <time.h>
 
 #include "openssl_aes.h"
+#include "openssl_des.h"
 #include "tiny_aes.h"
 #include "rosetta_des.h"
 #include "programmingalgorithms_des.h"
-#include "main.h"
 
 // #define KEY_LENGTH 128
 #define KEY_LENGTH 16
@@ -102,17 +102,11 @@ void measure_tiny_aes(int runs, char* message, char* key, uint8_t iv[]) {
 void measure_openssl_aes(int runs, char* message, char* key) {
     clock_t openssl_aes_start = clock();
     for (int i = 0; i < runs; i++) {
-        openssl_main(message, key, MESSAGE_LENGTH, KEY_LENGTH);
+        openssl_aes_main(message, key, MESSAGE_LENGTH, KEY_LENGTH);
     }
 
     clock_t openssl_aes_end = clock();
-    print_output("OpenSSL", runs, openssl_aes_start, openssl_aes_end);
-}
-
-void measure_aes(int runs, char* message, char* key, uint8_t iv[]) {
-    printf("========== AES ==========\n");
-    measure_openssl_aes(runs, message, key);
-    measure_tiny_aes(runs, message, key, iv);
+    print_output("OpenSSL AES", runs, openssl_aes_start, openssl_aes_end);
 }
 
 void measure_rosetta_des(int runs, char* message, char* key) {
@@ -134,8 +128,25 @@ void measure_programmingalgorithms_des(int runs, char* message, char* key) {
     print_output("programmingalgorithms DES", runs, start, end);
 }
 
+void measure_openssl_des(int runs, char* message, char* key) {
+    clock_t start = clock();
+    for (int i = 0; i < runs; i++) {
+        openssl_des_main(message, key, MESSAGE_LENGTH, KEY_LENGTH);
+    }
+
+    clock_t end = clock();
+    print_output("OpenSSL DES", runs, start, end);
+}
+
+void measure_aes(int runs, char* message, char* key, uint8_t iv[]) {
+    printf("========== AES ==========\n");
+    measure_openssl_aes(runs, message, key);
+    measure_tiny_aes(runs, message, key, iv);
+}
+
 void measure_des(int runs, char* message, char* key, uint8_t iv[]) {
     printf("========== DES ==========\n");
+    measure_openssl_des(runs, message, key);
     measure_rosetta_des(runs, message, key);
     measure_programmingalgorithms_des(runs, message, key);
 }
@@ -146,12 +157,12 @@ int main() {
     // length = 16 chars => 128 bits
     char* key = "This key was bro";
 
-    int encryption_runs = 100000;
+    int encryption_runs = 5000;
 
     uint8_t iv[] = { 0x75, 0x52, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x67, 0x21, 0x21 };
 
     printf("Ecryption runs: %i\n", encryption_runs);
-    measure_aes(encryption_runs, message, key, iv);
+    // measure_aes(encryption_runs, message, key, iv);
     measure_des(encryption_runs, message, key, iv);
     return 0;
 }
