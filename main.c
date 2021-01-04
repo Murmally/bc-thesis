@@ -172,13 +172,34 @@ void measure_programmingalgorithms_des(int runs) {
 }
 
 void measure_openssl_des(int runs, char* message, char* key) {
-    clock_t start = clock();
-    for (int i = 0; i < runs; i++) {
-        openssl_des_main(message, key, MESSAGE_LENGTH, KEY_LENGTH);
-    }
+    clock_t start, end;
+    unsigned char message1[DES_MSG_LEN_1] = "Vstup s 16 znaky";
+    unsigned char message2[DES_MSG_LEN_2] = "Vstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znaky";
+    unsigned char message3[DES_MSG_LEN_3] = "Vstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znaky";
 
-    clock_t end = clock();
-    print_output("OpenSSL DES", runs, start, end, 1);
+    char* target1 = malloc(sizeof(message1));
+    char* output1 = malloc(sizeof(message1));
+    start = clock();
+    for (int i = 0; i < runs; i++) { openssl_des_main(message1, target1, output1, DES_MSG_LEN_1); }
+    end = clock();
+    print_output("OpenSSL DES - 128b", runs, start, end, DES_MSG_LEN_1);
+
+    char* target2 = malloc(sizeof(message2));
+    char* output2 = malloc(sizeof(message2));
+    start = clock();
+    for (int i = 0; i < runs; i++) { 
+        // printf("%i\n", i);
+        openssl_des_main(message2, target2, output2, DES_MSG_LEN_2);
+    }
+    end = clock();
+    print_output("OpenSSL DES - 512b", runs, start, end, DES_MSG_LEN_2);
+
+    char* target3 = malloc(sizeof(message3));
+    char* output3 = malloc(sizeof(message3));
+    start = clock();
+    for (int i = 0; i < runs; i++) { openssl_des_main(message3, target3, output3, DES_MSG_LEN_3); }
+    end = clock();
+    print_output("OpenSSL DES - 2048b", runs, start, end, DES_MSG_LEN_3);
 }
 
 void measure_aes(int runs, char* message, char* key, uint8_t iv[]) {
@@ -190,23 +211,22 @@ void measure_aes(int runs, char* message, char* key, uint8_t iv[]) {
 
 void measure_des(int runs, char* message, char* key, uint8_t iv[]) {
     printf("========== DES ==========\n");
-    measure_openssl_des(runs, message, key);
     measure_programmingalgorithms_des(runs);
     measure_rosetta_des(runs);
+    // measure_openssl_des(runs, message, key);
 }
 
 int main() {
-    // length = 64 chars => 512 bits
     char* message = "This source was brought to you by Raid: Shadow Legends+Ninechars";
-    // length = 16 chars => 128 bits
     char* key = "This key was bro";
 
-    int encryption_runs = 10000;
+    int encryption_runs = 100;
 
     uint8_t iv[] = { 0x75, 0x52, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x67, 0x21, 0x21 };
 
     printf("Ecryption runs: %i\n", encryption_runs);
     // measure_aes(encryption_runs, message, key, iv);
     measure_des(encryption_runs, message, key, iv);
+    printf("Measuring is over.\n");
     return 0;
 }
