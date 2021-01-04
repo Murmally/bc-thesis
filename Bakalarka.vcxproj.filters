@@ -39,6 +39,9 @@
     <ClCompile Include="gnutls_aes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="libsodium_aes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="codingalpha_des.h">
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gnutls_aes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libsodium_aes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

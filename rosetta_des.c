@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "rosetta_des.h"
 
-typedef unsigned char ubyte;
-
-#define KEY_LEN 16
+#define DEBUG 0
+#define RELEASE_MEMORY 1
+#define KEY_LEN 8
 typedef ubyte key_t[KEY_LEN];
 
 const static ubyte PC1[] = {
@@ -454,56 +455,43 @@ void driver(const key_t key, const ubyte* message, int len) {
     String encoded, decoded;
     char buffer[128];
 
-    //printBytes(key, KEY_LEN, buffer);
-    // printf("Key     : %s\n", buffer);
+    if (DEBUG) {
+        printBytes(key, KEY_LEN, buffer);
+        printf("Key     : %s\n", buffer);
 
-    // printBytes(message, len, buffer);
-    // printf("Message : %s\n", buffer);
+        printBytes(message, len, buffer);
+        printf("Message : %s\n", buffer);
+    }
 
     encoded = encrypt(key, message, len);
-    /*printBytes(encoded.data, encoded.len, buffer);
-    printf("Encoded : %s\n", buffer);*/
+    if (DEBUG) {
+        printBytes(encoded.data, encoded.len, buffer);
+        printf("Encoded : %s\n", buffer);
+    }
 
     decoded = decrypt(key, encoded.data, encoded.len);
-    // printBytes(decoded.data, decoded.len, buffer);
-    // printf("Decoded : %s\n\n", buffer);
+
+    if (DEBUG) {
+        printBytes(decoded.data, decoded.len, buffer);
+        printf("Decoded : %s\n\n", buffer);
+    }
 
     /* release allocated memory */
-    /*if (encoded.len > 0) {
-        free(encoded.data);
-        //encoded.data = 0;
+    if (RELEASE_MEMORY) {
+        if (encoded.len > 0) {
+            free(encoded.data);
+            encoded.data = 0;
+        }
+        if (decoded.len > 0) {
+            free(decoded.data);
+            decoded.data = 0;
+        }
     }
-    if (decoded.len > 0) {
-        free(decoded.data);
-        //decoded.data = 0;
-    }
-    if (1 == 2){
-        return;
-    }*/
 }
 
-int rosetta_main(char* message, char* key, int msgLen, int keyLen)  {
-    //    const key_t keys[] = {
-    //            {0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1},
-    //    };
-    //    const ubyte message1[] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF };
-        /*key_t rosetta_key = {
-            0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1, 0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1,
-            0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1, 0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1,
-            0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1, 0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1,
-            0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1, 0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1,
-        };
-        int len = 64;
-        ubyte rosetta_message[64];
-        */
-
-    key_t rosetta_key = { 0x01,0x23,0x45,0x67,0x89,0xAB,0xCD,0xEF,0x01,0x23,0x45,0x67,0x89,0xAB,0xCD,0xEF };
-    
-    ubyte rosetta_message[64];
-    for (int i = 0; i < msgLen; i++) {
-        rosetta_message[i] = (ubyte)message[i];
-    }
-
-    driver(rosetta_key, rosetta_message, msgLen);
+int rosetta_main(ubyte * message, int msgLen)  {
+    // key will always be 64 bits
+    key_t rosetta_key = { 0x01,0x23,0x45,0x67,0x89,0xAB,0xCD,0xEF };
+    driver(rosetta_key, message, msgLen);
     return 0;
 }

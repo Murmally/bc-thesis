@@ -236,10 +236,10 @@ void Crypt(uint8_t in[], uint8_t out[], uint8_t key[][6])
 
 void PrintText(uint8_t hash[]) {
     for (int i = 0; i < 8; ++i) {
-        // printf("%02x ", hash[i]);
+        printf("%02x ", hash[i]);
     }
 
-    // printf("\n");
+    printf("\n");
 }
 
 void programmingalrorithms_des(char* message, char* key, int msgLen, int keyLen) {

@@ -1,0 +1,1 @@
+void libsodium_aes_main();

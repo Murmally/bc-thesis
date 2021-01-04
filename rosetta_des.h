@@ -1,6 +1,8 @@
 #ifndef UNTITLED_ROSETTA_DES_H
 #define UNTITLED_ROSETTA_DES_H
 
-int rosetta_main(char* message, char* key, int msgLen, int keyLen);
+typedef unsigned char ubyte;
+
+int rosetta_main(ubyte* message, int msgLen);
 
 #endif //UNTITLED_ROSETTA_DES_H
