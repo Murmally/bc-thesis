@@ -453,7 +453,7 @@ String decrypt(const key_t key, const ubyte* message, int len) {
  */
 void driver(const key_t key, const ubyte* message, int len) {
     String encoded, decoded;
-    char buffer[128];
+    char buffer[2048];
 
     if (DEBUG) {
         printBytes(key, KEY_LEN, buffer);

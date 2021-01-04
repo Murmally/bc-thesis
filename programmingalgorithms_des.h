@@ -1,6 +1,6 @@
 #ifndef UNTITLED_PROGRAMMINGALGORITHMS_DES_H
 #define UNTITLED_PROGRAMMINGALGORITHMS_DES_H
 
-void programmingalrorithms_des(char* messge, char* key, int msgLen, int keyLen);
+void programmingalrorithms_des(uint8_t * text, uint8_t* out);
 
 #endif //UNTITLED_PROGRAMMINGALGORITHMS_DES_H
