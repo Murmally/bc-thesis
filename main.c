@@ -29,7 +29,7 @@
 
 #define AES_OPENSSL_DEBUG 0
 
-void tiny_aesx(char* report, char* key, uint8_t* iv) {
+/*void tiny_aesx(char* report, char* key, uint8_t* iv) {
     int dlen = strlen(report);
     int klen = strlen(key);
     uint8_t i;
@@ -82,11 +82,16 @@ void tiny_aesx(char* report, char* key, uint8_t* iv) {
     // start decryption
     AES_CBC_decrypt_buffer(&ctx, hexarray, dlenu);
 }
+*/
+
+void separate_measurements() {
+    printf("\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+}
 
 void print_output(char* description, int runs, clock_t start, clock_t end, int msgLen) {
     double time_spent = ((double)end - (double)start) / CLOCKS_PER_SEC;
     double bitrate = msgLen * (runs / time_spent);
-    printf("~~~~~ %s ~~~~~\nTime elapsed: %f\nAverage time per run: %f\nBitrate: %.01lf b/s  =>  %.0lf B/s  =>  %.0lf kB/s\n\n",
+    printf("\t%s \n\t\tTime elapsed: %f\n\t\tAverage time per run: %f\n\t\tBitrate: %.01lf b/s  =>  %.0lf B/s  =>  %.0lf kB/s\n\n",
         description, time_spent, time_spent / runs, bitrate, bitrate / 8, (bitrate / 8) / 100);
 }
 
@@ -284,28 +289,34 @@ void measure_openssl_des(int runs, char* message, char* key) {
 }
 
 void measure_aes(int runs) {
-    printf("========== AES ==========\n");
+    printf("\nADVANCED ENCRYPTION STANDARD MEASUREMENT RESULTS:\n");
     measure_openssl_aes(runs);
-    // measure_tiny_aes(runs);
+    separate_measurements();
+    measure_tiny_aes(runs);
+    separate_measurements();
     // measure_libsodium_aes(runs, message, key);
+    separate_measurements();
 }
 
 void measure_des(int runs, char* message, char* key) {
-    printf("========== DES ==========\n");
+    printf("\nDATA ENCRYPTION STANDARD MEASUREMENT RESULTS:\n");
     measure_programmingalgorithms_des(runs);
+    separate_measurements();
     measure_rosetta_des(runs);
-    // measure_openssl_des(runs, message, key);
+    separate_measurements();
+    measure_openssl_des(runs, message, key);
+    separate_measurements();
 }
 
 int main() {
     char* message = "This source was brought to you by Raid: Shadow Legends+Ninechars";
     char* key = "This key was bro";
 
-    int encryption_runs = 10000;
+    int encryption_runs = 500;
 
     printf("Ecryption runs: %i\n", encryption_runs);
     measure_aes(encryption_runs);
-    // measure_des(encryption_runs, message, key);
-    printf("Measuring is over.\n");
+    measure_des(encryption_runs, message, key);
+    printf("Done! Exiting...\n");
     return 0;
 }
