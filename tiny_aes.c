@@ -566,3 +566,21 @@ void AES_CTR_xcrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, uint32_t length)
 }
 
 #endif // #if defined(CTR) && (CTR == 1)
+
+
+
+void tiny_aes(uint8_t hexarray[], uint8_t kexarray[], uint8_t* iv, int dlen, int klen) {
+    //start the encryption
+    struct AES_ctx ctx;
+    AES_init_ctx_iv(&ctx, kexarray, iv);
+
+    // encrypt
+    AES_CBC_encrypt_buffer(&ctx, hexarray, dlen);
+
+    // reset the iv !! important to work!
+    AES_ctx_set_iv(&ctx, iv);
+
+    // start decryption
+    AES_CBC_decrypt_buffer(&ctx, hexarray, dlen);
+}
+

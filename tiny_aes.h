@@ -86,5 +86,6 @@ void AES_CTR_xcrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, uint32_t length);
 
 #endif // #if defined(CTR) && (CTR == 1)
 
+void tiny_aes(uint8_t* report, uint8_t* key, uint8_t* iv, int dlen, int klen);
 
 #endif // _AES_H_
