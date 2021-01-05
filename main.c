@@ -256,34 +256,24 @@ void measure_programmingalgorithms_des(int runs) {
     print_output("programmingalgorithms DES - 2048b", runs, start, end, DES_MSG_LEN_3);
 }
 
-// TODOx - memory issues (crashing)
 void measure_openssl_des(int runs) {
     clock_t start, end;
     unsigned char message1[DES_MSG_LEN_1] = "Vstup s 16 znaky";
     unsigned char message2[DES_MSG_LEN_2] = "Vstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znaky";
     unsigned char message3[DES_MSG_LEN_3] = "Vstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znaky";
 
-    char* target1 = malloc(sizeof(message1));
-    char* output1 = malloc(sizeof(message1));
     start = clock();
-    for (int i = 0; i < runs; i++) { openssl_des_main(message1, target1, output1, DES_MSG_LEN_1); }
+    for (int i = 0; i < runs; i++) { openssl_des_main(message1, DES_MSG_LEN_1); }
     end = clock();
     print_output("OpenSSL DES - 128b", runs, start, end, DES_MSG_LEN_1);
 
-    char* target2 = malloc(sizeof(message2));
-    char* output2 = malloc(sizeof(message2));
     start = clock();
-    for (int i = 0; i < runs; i++) { 
-        // printf("%i\n", i);
-        openssl_des_main(message2, target2, output2, DES_MSG_LEN_2);
-    }
+    for (int i = 0; i < runs; i++) { openssl_des_main(message2, DES_MSG_LEN_2); }
     end = clock();
     print_output("OpenSSL DES - 512b", runs, start, end, DES_MSG_LEN_2);
 
-    char* target3 = malloc(sizeof(message3));
-    char* output3 = malloc(sizeof(message3));
     start = clock();
-    for (int i = 0; i < runs; i++) { openssl_des_main(message3, target3, output3, DES_MSG_LEN_3); }
+    for (int i = 0; i < runs; i++) { openssl_des_main(message3, DES_MSG_LEN_3); }
     end = clock();
     print_output("OpenSSL DES - 2048b", runs, start, end, DES_MSG_LEN_3);
 }
@@ -295,24 +285,24 @@ void measure_aes(int runs) {
     measure_tiny_aes(runs);
     separate_measurements();
     // measure_libsodium_aes(runs, message, key);
-    separate_measurements();
+    // separate_measurements();
 }
 
 void measure_des(int runs) {
     printf("\nDATA ENCRYPTION STANDARD MEASUREMENT RESULTS:\n");
+    measure_openssl_des(runs);
+    separate_measurements();
     measure_programmingalgorithms_des(runs);
     separate_measurements();
     measure_rosetta_des(runs);
     separate_measurements();
-    measure_openssl_des(runs);
-    separate_measurements();
 }
 
 int main() {
-    int encryption_runs = 500;
+    int encryption_runs = 5000;
     printf("Ecryption runs: %i\n", encryption_runs);
-    measure_aes(encryption_runs);
     measure_des(encryption_runs);
+    measure_aes(encryption_runs);
     printf("Done! Exiting...\n");
     return 0;
 }
