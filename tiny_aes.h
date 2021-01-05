@@ -24,8 +24,8 @@
 
 
 #define AES128 1
-//#define AES192 1
-//#define AES256 1
+#define AES192 0
+#define AES256 0
 
 #define AES_BLOCKLEN 16 // Block length in bytes - AES is 128b block only
 
