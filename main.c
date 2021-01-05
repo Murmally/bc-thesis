@@ -257,7 +257,7 @@ void measure_programmingalgorithms_des(int runs) {
 }
 
 // TODOx - memory issues (crashing)
-void measure_openssl_des(int runs, char* message, char* key) {
+void measure_openssl_des(int runs) {
     clock_t start, end;
     unsigned char message1[DES_MSG_LEN_1] = "Vstup s 16 znaky";
     unsigned char message2[DES_MSG_LEN_2] = "Vstup s 16 znakyVstup s 16 znakyVstup s 16 znakyVstup s 16 znaky";
@@ -298,25 +298,21 @@ void measure_aes(int runs) {
     separate_measurements();
 }
 
-void measure_des(int runs, char* message, char* key) {
+void measure_des(int runs) {
     printf("\nDATA ENCRYPTION STANDARD MEASUREMENT RESULTS:\n");
     measure_programmingalgorithms_des(runs);
     separate_measurements();
     measure_rosetta_des(runs);
     separate_measurements();
-    measure_openssl_des(runs, message, key);
+    measure_openssl_des(runs);
     separate_measurements();
 }
 
 int main() {
-    char* message = "This source was brought to you by Raid: Shadow Legends+Ninechars";
-    char* key = "This key was bro";
-
     int encryption_runs = 500;
-
     printf("Ecryption runs: %i\n", encryption_runs);
     measure_aes(encryption_runs);
-    measure_des(encryption_runs, message, key);
+    measure_des(encryption_runs);
     printf("Done! Exiting...\n");
     return 0;
 }
