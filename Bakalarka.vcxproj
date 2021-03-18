@@ -139,10 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gnutls_aes.c" />
-    <ClCompile Include="libsodium_aes.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="codingalpha_des.c" />
+    <ClCompile Include="openluopworld_aes.c" />
     <ClCompile Include="openssl_aes.c" />
     <ClCompile Include="openssl_des.c" />
     <ClCompile Include="programmingalgorithms_des.c" />
@@ -150,9 +148,7 @@
     <ClCompile Include="tiny_aes.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="codingalpha_des.h" />
-    <ClInclude Include="gnutls_aes.h" />
-    <ClInclude Include="libsodium_aes.h" />
+    <ClInclude Include="openluopworld_aes.h" />
     <ClInclude Include="openssl_aes.h" />
     <ClInclude Include="openssl_des.h" />
     <ClInclude Include="programmingalgorithms_des.h" />

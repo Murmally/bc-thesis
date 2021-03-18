@@ -4,15 +4,21 @@
 #include <time.h>
 
 #include "openssl_aes.h"
-#include "openssl_des.h"
 #include "tiny_aes.h"
+#include "openluopworld_aes.h"
+
+#include "openssl_des.h"
 #include "rosetta_des.h"
 #include "programmingalgorithms_des.h"
-#include "libsodium_aes.h"
 
-// #define KEY_LENGTH 128
+// how many times should the measurement be done
+#define MEASUREMENT_RUNS 5
+
+// Set to 0 for minimalistic output, set to 1 for more information.
+#define RICH_OUTPUT 0
+
+// values are in bytes
 #define KEY_LENGTH 16
-// #define MESSAGE_LENGTH 512
 #define MESSAGE_LENGTH 64
 
 // values are in bytes
@@ -29,70 +35,28 @@
 
 #define AES_OPENSSL_DEBUG 0
 
-/*void tiny_aesx(char* report, char* key, uint8_t* iv) {
-    int dlen = strlen(report);
-    int klen = strlen(key);
-    uint8_t i;
-
-    //Proper Length of report - in case padding is needed
-    int dlenu = dlen;
-    if (dlen % 16) {
-        dlenu += 16 - (dlen % 16);
-    }
-
-    //Proper length of key - in case padding is needed
-    int klenu = klen;
-    if (klen % 16) {
-        klenu += 16 - (klen % 16);
-    }
-
-    // Make the uint8_t arrays
-    // uint8_t hexarray[dlenu];
-    // uint8_t kexarray[klenu];
-
-    uint8_t hexarray[MESSAGE_LENGTH];
-    uint8_t kexarray[KEY_LENGTH];
-
-    // Initialize them with zeros
-    memset(hexarray, 0, dlenu);
-    memset(kexarray, 0, klenu);
-
-    // Fill the uint8_t arrays
-    for (int i = 0;i < dlen;i++) {
-        hexarray[i] = (uint8_t)report[i];
-    }
-    for (int i = 0;i < klen;i++) {
-        kexarray[i] = (uint8_t)key[i];
-    }
-
-    // padding is not necessary
-    // int reportPad = pkcs7_padding_pad_buffer(hexarray, dlen, sizeof(hexarray), 16);
-    // int keyPad = pkcs7_padding_pad_buffer(kexarray, klen, sizeof(kexarray), 16);
-
-    //start the encryption
-    struct AES_ctx ctx;
-    AES_init_ctx_iv(&ctx, kexarray, iv);
-
-    // encrypt
-    AES_CBC_encrypt_buffer(&ctx, hexarray, dlenu);
-
-    // reset the iv !! important to work!
-    AES_ctx_set_iv(&ctx, iv);
-
-    // start decryption
-    AES_CBC_decrypt_buffer(&ctx, hexarray, dlenu);
-}
-*/
-
 void separate_measurements() {
-    printf("\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+    if (RICH_OUTPUT) {
+        printf("\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+    }
+
+    printf("\n");
 }
 
 void print_output(char* description, int runs, clock_t start, clock_t end, int msgLen) {
+    msgLen = msgLen * 8;    // msgLen is in bits, turn to bytes
     double time_spent = ((double)end - (double)start) / CLOCKS_PER_SEC;
-    double bitrate = msgLen * (runs / time_spent);
-    printf("\t%s \n\t\tTime elapsed: %f\n\t\tAverage time per run: %f\n\t\tBitrate: %.01lf b/s  =>  %.0lf B/s  =>  %.0lf kB/s\n\n",
-        description, time_spent, time_spent / runs, bitrate, bitrate / 8, (bitrate / 8) / 100);
+    double time_per_run = time_spent / runs;
+    double bitrate = msgLen / time_per_run;
+    bitrate *= 2; // run includes both encryption and decryption
+    
+    if (RICH_OUTPUT) {
+        printf("\t%s \n\t\tTime elapsed: %f\n\t\tAverage time per run: %f\n\t\tBitrate: %.01lf b/s  =>  %.0lf B/s  =>  %.0lf kB/s\n\n",
+            description, time_spent, time_spent / runs, bitrate, bitrate / 8, (bitrate / 8) / 100);
+    }
+    else {
+        printf("%s bitrate kB/s: %.01f\n", description, (bitrate / 8) / 100);
+    }
 }
 
 void measure_tiny_aes(int runs) {
@@ -117,6 +81,7 @@ void measure_tiny_aes(int runs) {
     for (int i = 0; i < runs; i++) { tiny_aes(message3, customKey, iv, AES_MSG_LEN_3, AES_KEY_LEN); }
     end = clock();
     print_output("tiny AES - 2048b", runs, start, end, AES_MSG_LEN_3);
+    separate_measurements();
 }
 
 void measure_openssl_aes(int runs) {
@@ -197,16 +162,120 @@ void measure_openssl_aes(int runs) {
     }
     end = clock();
     print_output("OpenSSL AES - 2048b", runs, start, end, AES_MSG_LEN_3);
+    separate_measurements();
 }
 
-void measure_libsodium_aes(int runs, char* message, char* key) {
-    clock_t start = clock();
-    for (int i = 0; i < runs; i++) {
-        libsodium_aes_main();
+// Currently has no use, mainly for testing
+void run_openluopworld_process() {
+    uint8_t i, r;
+
+    /* 128 bit key */
+    uint8_t key[] = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+
+    };
+
+    uint8_t plaintext[] = {
+        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+    };
+
+    uint8_t ciphertext[AES_BLOCK_SIZE];
+    uint8_t roundkeys[AES_ROUND_KEY_SIZE];
+    if (OPENLUOPWORLD_DEBUG) {
+        printf("\n--------------------------------------------------------\n");
+        printf("Plain text:\n");
+        for (i = 0; i < AES_BLOCK_SIZE; i++) { printf("%2x ", plaintext[i]); }
     }
 
-    clock_t end = clock();
-    print_output("Libsodium", runs, start, end, 1);
+    aes_key_schedule_128(key, roundkeys);
+
+    if (OPENLUOPWORLD_DEBUG) {
+        printf("Round Keys:\n");
+        for (r = 0; r <= AES_ROUNDS; r++) {
+            for (i = 0; i < AES_BLOCK_SIZE; i++) {
+                printf("%2x ", roundkeys[r * AES_BLOCK_SIZE + i]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+
+    aes_encrypt_128(roundkeys, plaintext, ciphertext);
+
+    if (OPENLUOPWORLD_DEBUG) {
+        printf("Cipher text:\n");
+        for (i = 0; i < AES_BLOCK_SIZE; i++) {
+            printf("%2x ", ciphertext[i]);
+        }
+    }
+
+    aes_decrypt_128(roundkeys, ciphertext, ciphertext);
+
+    if (OPENLUOPWORLD_DEBUG) {
+        printf("Plain text:\n");
+        for (i = 0; i < AES_BLOCK_SIZE; i++) {
+            printf("%2x ", ciphertext[i]);
+        }
+        for (i = 0; i < AES_BLOCK_SIZE; i++) {
+            if (ciphertext[i] != plaintext[i]) { break; }
+        }
+        if (AES_BLOCK_SIZE != i) { printf("\nDECRYPT WRONG\n\n"); }
+        else {
+            printf("\nDECRYPT CORRECT\n\n");
+        }
+    }
+}
+
+void measure_openluopworld_aes(int runs) {
+    uint8_t key[] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+
+    };
+
+    uint8_t plaintext[] = {
+        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+    };
+
+    uint8_t ciphertext[AES_BLOCK_SIZE];
+    uint8_t roundkeys[AES_ROUND_KEY_SIZE];
+
+    clock_t start, end;
+    start = clock();
+    aes_key_schedule_128(key, roundkeys);
+    for (int i = 0; i < runs; i++) {
+        aes_encrypt_128(roundkeys, plaintext, ciphertext);
+        aes_decrypt_128(roundkeys, ciphertext, ciphertext);
+    }
+    end = clock();
+    print_output("Openluopworld - AES 128b", runs, start, end, AES_MSG_LEN_1);
+
+    start = clock();
+    aes_key_schedule_128(key, roundkeys);
+    for (int i = 0; i < runs; i++) {
+        for (int j = 0; j < 4; j++) {
+            aes_encrypt_128(roundkeys, plaintext, ciphertext);
+            aes_decrypt_128(roundkeys, ciphertext, ciphertext);
+        }
+    }
+    end = clock();
+    print_output("Openluopworld - AES 512b", runs, start, end, AES_MSG_LEN_2);
+
+    start = clock();
+    aes_key_schedule_128(key, roundkeys);
+    for (int i = 0; i < runs; i++) {
+        for (int j = 0; j < 16; j++) {
+            aes_encrypt_128(roundkeys, plaintext, ciphertext);
+            aes_decrypt_128(roundkeys, ciphertext, ciphertext);
+        }
+    }
+    end = clock();
+    print_output("Openluopworld - AES 2048b", runs, start, end, AES_MSG_LEN_3);
+
+    separate_measurements();
 }
 
 void measure_rosetta_des(int runs) {
@@ -229,6 +298,7 @@ void measure_rosetta_des(int runs) {
     for (int i = 0; i < runs; i++) { rosetta_main(message3, DES_MSG_LEN_3); }
     end = clock();
     print_output("rosetta DES - 2048b", runs, start, end, DES_MSG_LEN_3);
+    separate_measurements();
 }
 
 void measure_programmingalgorithms_des(int runs) {
@@ -254,6 +324,7 @@ void measure_programmingalgorithms_des(int runs) {
     for (int i = 0; i < runs; i++) { programmingalrorithms_des(message3, out3); }
     end = clock();
     print_output("programmingalgorithms DES - 2048b", runs, start, end, DES_MSG_LEN_3);
+    separate_measurements();
 }
 
 void measure_openssl_des(int runs) {
@@ -276,33 +347,32 @@ void measure_openssl_des(int runs) {
     for (int i = 0; i < runs; i++) { openssl_des_main(message3, DES_MSG_LEN_3); }
     end = clock();
     print_output("OpenSSL DES - 2048b", runs, start, end, DES_MSG_LEN_3);
+    separate_measurements();
 }
 
 void measure_aes(int runs) {
     printf("\nADVANCED ENCRYPTION STANDARD MEASUREMENT RESULTS:\n");
-    measure_openssl_aes(runs);
-    separate_measurements();
-    measure_tiny_aes(runs);
-    separate_measurements();
-    // measure_libsodium_aes(runs, message, key);
-    // separate_measurements();
+    for (int i = 0; i < MEASUREMENT_RUNS; i++) {
+        measure_openluopworld_aes(runs);
+        //measure_openssl_aes(runs);
+        //measure_tiny_aes(runs);
+    }
 }
 
 void measure_des(int runs) {
     printf("\nDATA ENCRYPTION STANDARD MEASUREMENT RESULTS:\n");
-    measure_openssl_des(runs);
-    separate_measurements();
-    measure_programmingalgorithms_des(runs);
-    separate_measurements();
-    measure_rosetta_des(runs);
-    separate_measurements();
+    for (int i = 0; i < MEASUREMENT_RUNS; i++) {
+        measure_openssl_des(runs);
+        measure_programmingalgorithms_des(runs);
+        measure_rosetta_des(runs);
+    }
 }
 
 int main() {
-    int encryption_runs = 5000;
-    printf("Ecryption runs: %i\n", encryption_runs);
-    measure_des(encryption_runs);
+    int encryption_runs = 50000;
+    printf("Ecryption will happen in %i rounds. In one round there will be runs: %i\n", MEASUREMENT_RUNS, encryption_runs);
     measure_aes(encryption_runs);
-    printf("Done! Exiting...\n");
+    // measure_des(encryption_runs);
+    printf("Measurement done! Exiting...\n");
     return 0;
 }

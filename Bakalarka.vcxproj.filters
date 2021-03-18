@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="codingalpha_des.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="openssl_aes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,17 +33,11 @@
     <ClCompile Include="openssl_des.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gnutls_aes.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libsodium_aes.c">
+    <ClCompile Include="openluopworld_aes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="codingalpha_des.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="openssl_aes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -62,10 +53,7 @@
     <ClInclude Include="openssl_des.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gnutls_aes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libsodium_aes.h">
+    <ClInclude Include="openluopworld_aes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
